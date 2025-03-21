@@ -44,7 +44,7 @@ jobs:
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: "report/qwiet-sarif-report-${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}.sarif"       
+        sarif_file: report/qwiet-sarif-report-Qwiet-GoLang-BB2.sarif      
         category: qwiet-prezero        
 
    
