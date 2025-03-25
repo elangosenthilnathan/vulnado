@@ -42,9 +42,11 @@ jobs:
     - name: Export Sarif Report qwiet ai
       shell: bash
       run: |
-        git clone --branch elango/exportOptions4SAST_SCA_Secret_Container --single-branch https://github.com/ShiftLeftSecurity/field-integrations report
+        git clone https://github.com/ShiftLeftSecurity/field-integrations report
+        #git clone --branch elango/exportOptions4SAST_SCA_Secret_Container --single-branch https://github.com/ShiftLeftSecurity/field-integrations report
         pip3 install -r report/shiftleft-utils/requirements.txt
-        python3 report/shiftleft-utils/export.py --app elangosenthilnathan_vulnado -k all -f sarif --report_file report/qwiet-sarif-report.sarif
+        mkdir reps
+        python3 report/shiftleft-utils/export.py --app elangosenthilnathan_vulnado  -f sarif --reports_dir reps --report_file qwiet-sarif-report.sarif 
         chmod -R 777 report
         gzip -c report/qwiet-sarif-report-elangosenthilnathan_vulnado.sarif | base64 -w0
       env:
