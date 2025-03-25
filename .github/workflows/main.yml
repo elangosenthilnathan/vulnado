@@ -38,7 +38,7 @@ jobs:
     - name: Run sl analyze 1
       shell: bash
       run: |
-        ./sl analyze --wait --verbose --app "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" -b "master" .
+        ./sl analyze --wait --verbose --app "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" --tag branch="master" .
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
 
