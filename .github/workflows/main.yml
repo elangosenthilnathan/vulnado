@@ -1,15 +1,9 @@
-
-# This workflow integrates Qwiet preZero with GitHub
-# Visit https://docs.shiftleft.io for help
 name: Qwiet
 
 on:
   pull_request:
   workflow_dispatch:
   push:
-
-env:
- BRANCH_NAME: ${{ github.head_ref || github.ref_name }}   
 
 jobs:
   Qwiet-Static-Analysis:
@@ -23,14 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # - name: Run Qwiet AI Scan
-    #   uses: sandy-qwietai/qwietai-actions@main
-    #   with:
-    #     app_name: "your-app-name"
-    #     language: java
-    #   env:
-    #     SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}    
-
     - name: Download ShiftLeft CLI
       run: |
         curl https://cdn.shiftleft.io/download/sl > ./sl && chmod a+rx ./sl 
@@ -39,7 +25,7 @@ jobs:
       shell: bash
       run: |
         echo "app_name=${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
-        ./sl analyze --wait --verbose --app "${app_name}" --tag branch="master" .
+        ./sl analyze --wait --verbose --app "${app_name}" --tag branch=${{ github.ref_name }} .
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
 
@@ -48,7 +34,7 @@ jobs:
       run: |
         git clone --branch elango/exportOptions4SAST_SCA_Secret_Container --single-branch https://github.com/ShiftLeftSecurity/field-integrations report
         pip3 install -r report/shiftleft-utils/requirements.txt
-        python3 report/shiftleft-utils/export.py --app "${app_name}"  -k sast -f sarif --report_file report/qwiet-sarif-report.sarif 
+        python3 report/shiftleft-utils/export.py --app "${app_name}"  -k all -f sarif --report_file report/qwiet-sarif-report.sarif 
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}        
 
