@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
   push:
 
+env:
+ BRANCH_NAME: ${{ github.head_ref || github.ref_name }}   
+
 jobs:
   Qwiet-Static-Analysis:
     runs-on: ubuntu-latest
@@ -28,16 +31,16 @@ jobs:
     #   env:
     #     SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}    
 
-    # - name: Download ShiftLeft CLI
-    #   run: |
-    #     curl https://cdn.shiftleft.io/download/sl > ./sl && chmod a+rx ./sl 
+    - name: Download ShiftLeft CLI
+      run: |
+        curl https://cdn.shiftleft.io/download/sl > ./sl && chmod a+rx ./sl 
 
-    # - name: Run sl analyze 1
-    #   shell: bash
-    #   run: |
-    #     ./sl analyze --wait --verbose --app "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" .
-    #   env:
-    #     SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
+    - name: Run sl analyze 1
+      shell: bash
+      run: |
+        ./sl analyze --wait --verbose --app "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" -b ${BRANCH_NAME} .
+      env:
+        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
 
     - name: Export Sarif Report qwiet ai
       shell: bash
