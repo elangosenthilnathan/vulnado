@@ -35,7 +35,7 @@ jobs:
       run: |
         curl https://cdn.shiftleft.io/download/sl > ./sl && chmod a+rx ./sl 
 
-    - name: Run sl analyze 1
+    - name: Run sl analyze
       shell: bash
       run: |
         echo "app_name=${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
@@ -46,20 +46,17 @@ jobs:
     - name: Export Sarif Report
       shell: bash
       run: |
-        echo "app_name=${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
-        #git clone https://github.com/ShiftLeftSecurity/field-integrations report
         git clone --branch elango/exportOptions4SAST_SCA_Secret_Container --single-branch https://github.com/ShiftLeftSecurity/field-integrations report
         pip3 install -r report/shiftleft-utils/requirements.txt
         python3 report/shiftleft-utils/export.py --app "${app_name}"  -k sast -f sarif --report_file report/qwiet-sarif-report.sarif 
-        ls -larth report
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}        
 
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: report/qwiet-sarif-report-"${app_name}".sarif      
-        category: qwiet-prezero-tool        
+        sarif_file: report/qwiet-sarif-report-${{ env.app_name }}.sarif      
+        category: qwiet-Scan   
 
    
  
