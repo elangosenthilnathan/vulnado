@@ -31,16 +31,16 @@ jobs:
     #   env:
     #     SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}    
 
-    # - name: Download ShiftLeft CLI
-    #   run: |
-    #     curl https://cdn.shiftleft.io/download/sl > ./sl && chmod a+rx ./sl 
+    - name: Download ShiftLeft CLI
+      run: |
+        curl https://cdn.shiftleft.io/download/sl > ./sl && chmod a+rx ./sl 
 
-    # - name: Run sl analyze 1
-    #   shell: bash
-    #   run: |
-    #     ./sl analyze --wait --verbose --app "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" -b ${BRANCH_NAME} .
-    #   env:
-    #     SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
+    - name: Run sl analyze 1
+      shell: bash
+      run: |
+        ./sl analyze --wait --verbose --app "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY#*/}" -b "master" .
+      env:
+        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
 
     - name: Export Sarif Report qwiet ai
       shell: bash
@@ -48,17 +48,15 @@ jobs:
         git clone https://github.com/ShiftLeftSecurity/field-integrations report
         #git clone --branch elango/exportOptions4SAST_SCA_Secret_Container --single-branch https://github.com/ShiftLeftSecurity/field-integrations report
         pip3 install -r report/shiftleft-utils/requirements.txt
-        mkdir reps
-        python3 report/shiftleft-utils/export.py --app elangosenthilnathan_vulnado  -f sarif --reports_dir reps --report_file qwiet-sarif-report.sarif 
-        chmod -R 777 report
-        gzip -c ngsast-report-elangosenthilnathan_vulnado.sarif | base64 -w0
+        python3 report/shiftleft-utils/export.py --app elangosenthilnathan_vulnado  -f sarif --reports_dir reps --report_file qwiet-sarif-report.json 
+        base64 qwiet-sarif-report.json 
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}        
 
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: ngsast-report-elangosenthilnathan_vulnado.sarif      
+        sarif_file: qwiet-sarif-report.json       
         category: qwiet-prezero        
 
    
